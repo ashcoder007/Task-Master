@@ -57,11 +57,11 @@ CREATE TABLE "Activity" (
 
 CREATE TABLE "_ProjectMembers" (
   "A" TEXT NOT NULL,
-  "B" TEXT NOT NULL
+  "B" TEXT NOT NULL,
+  CONSTRAINT "_ProjectMembers_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
-CREATE UNIQUE INDEX "_ProjectMembers_AB_unique" ON "_ProjectMembers"("A", "B");
 CREATE INDEX "_ProjectMembers_B_index" ON "_ProjectMembers"("B");
 
 ALTER TABLE "Project" ADD CONSTRAINT "Project_adminId_fkey" FOREIGN KEY ("adminId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
