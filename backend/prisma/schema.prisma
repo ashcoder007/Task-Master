@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model User {
+  id                String     @id @default(cuid())
+  name              String
+  email             String     @unique
+  password          String
+  role              Role       @default(MEMBER)
+  avatar            String?
+  createdAt         DateTime   @default(now())
+  adminProjects     Project[]  @relation("ProjectAdmin")
+  projects          Project[]  @relation("ProjectMembers")
+  assignedTasks     Task[]     @relation("AssignedTasks")
+  createdTasks      Task[]     @relation("CreatedTasks")
+  comments          Comment[]
+  activities        Activity[]
+}
+
+model Project {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  adminId     String
+  createdAt   DateTime   @default(now())
+  admin       User       @relation("ProjectAdmin", fields: [adminId], references: [id], onDelete: Cascade)
+  members     User[]     @relation("ProjectMembers")
+  tasks       Task[]
+  activities  Activity[]
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  priority    Priority   @default(MEDIUM)
+  status      TaskStatus @default(TODO)
+  assignedTo  String?
+  projectId   String
+  createdBy   String
+  createdAt   DateTime   @default(now())
+  assignee    User?      @relation("AssignedTasks", fields: [assignedTo], references: [id], onDelete: SetNull)
+  creator     User       @relation("CreatedTasks", fields: [createdBy], references: [id], onDelete: Cascade)
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  comments    Comment[]
+  activities  Activity[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  taskId    String
+  userId    String
+  createdAt DateTime @default(now())
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Activity {
+  id        String   @id @default(cuid())
+  message   String
+  userId    String?
+  projectId String?
+  taskId    String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  task      Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
