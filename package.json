@@ -13,8 +13,7 @@
     "prisma:generate": "npm run prisma:generate -w backend",
     "prisma:migrate": "npm run prisma:migrate -w backend",
     "prisma:deploy": "npm run prisma:deploy -w backend",
-    "seed": "npm run seed -w backend",
-    "postinstall": "npm run prisma:generate -w backend"
+    "seed": "npm run seed -w backend"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"
