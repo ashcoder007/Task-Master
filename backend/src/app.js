@@ -18,7 +18,7 @@ export const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 app.use(helmet());
-app.use(cors({ origin: env.clientUrl, credentials: true }));
+app.use(cors({ origin: "https://task-master-frontend-weld.vercel.app", credentials: true }));
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan(env.nodeEnv === "production" ? "combined" : "dev"));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 300 }));
