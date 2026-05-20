@@ -16,9 +16,22 @@ import { errorHandler, notFound } from "./middleware/error.middleware.js";
 
 export const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const allowedOrigins = env.clientUrl
+  .split(",")
+  .map((origin) => origin.trim().replace(/\/$/, ""))
+  .filter(Boolean);
 
 app.use(helmet());
-app.use(cors({ origin: "https://task-master-frontend-weld.vercel.app", credentials: true }));
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+      callback(null, true);
+      return;
+    }
+    callback(new Error(`Not allowed by CORS: ${origin}`));
+  },
+  credentials: true
+}));
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan(env.nodeEnv === "production" ? "combined" : "dev"));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 300 }));

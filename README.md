@@ -81,12 +81,20 @@ npm run prisma:migrate
 npm run seed
 ```
 
+`npm run seed` creates or updates the demo users/project/tasks without deleting existing rows. To intentionally reset a local database before seeding, run:
+
+```bash
+SEED_RESET=true npm run seed
+```
+
 For production:
 
 ```bash
 npm run prisma:generate
 npm run prisma:deploy -w backend
 ```
+
+Do not expect local PostgreSQL rows to appear in Render automatically. `prisma migrate deploy` creates the schema in the production database, but data must be imported separately with a PostgreSQL backup/restore or recreated through the app.
 
 ## API Endpoints
 
@@ -129,5 +137,33 @@ Comments:
 3. Deploy from the repository root.
 4. Run database migrations with `npm run prisma:deploy -w backend`.
 5. Optionally seed with `npm run seed -w backend`.
+
+## Vercel + Render Deployment
+
+When the frontend is on Vercel and the API is on Render:
+
+1. Set Render backend env vars:
+
+```env
+DATABASE_URL="your-render-postgres-external-or-internal-url"
+JWT_SECRET="a-long-random-secret"
+JWT_EXPIRES_IN="7d"
+NODE_ENV="production"
+CLIENT_URL="https://your-vercel-app.vercel.app"
+```
+
+2. Set Vercel frontend env vars:
+
+```env
+VITE_API_URL="https://your-render-service.onrender.com/api"
+```
+
+3. Run production migrations against Render Postgres:
+
+```bash
+npm run prisma:deploy -w backend
+```
+
+4. If you need the same rows from localhost in production, export the local PostgreSQL database and restore it into the Render PostgreSQL database. Seeding is only for demo data, not data migration.
 
 The root build script builds the Vite frontend, and the Express server serves `frontend/dist` in production.
