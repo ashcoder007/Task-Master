@@ -26,7 +26,7 @@ export function Login() {
     }
   };
 
-  return <AuthShell title="Log in to TaskMaster" subtitle="Use seeded admin@taskmaster.dev / password123 after running seed.">
+  return <AuthShell title="Log in to TaskMaster" subtitle="Access your workspace with your registered email and password.">
     <form onSubmit={handleSubmit(submit)} className="space-y-4">
       <Input label="Email" type="email" {...register("email")} error={errors.email?.message} />
       <Input label="Password" type="password" {...register("password")} error={errors.password?.message} />
